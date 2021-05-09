@@ -4,10 +4,10 @@ import "./card.scss";
 import { useSelector, useDispatch } from "react-redux";
 import getNewArray from "../redux/userSlice/data/imagesGenerator";
 
-import { openCard } from "../redux/userSlice";
+import { openCard, closeCard } from "../redux/userSlice";
 
 export default function Cards() {
-  const { answerList, isCardOpen, tempId, tempCard, point } = useSelector(
+  const { answerList, isCardOpen, wrongPair } = useSelector(
     (store) => store.user
   );
   console.log(answerList);
@@ -15,24 +15,10 @@ export default function Cards() {
   const [images, setImages] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  // const [tempId, setTempId] = useState(null);
+  useEffect(() => {
+    wrongPair && setTimeout(() => dispatch(closeCard(wrongPair)), 1200);
+  }, [wrongPair]);
 
-  // // console.log(newImages);
-
-  // let pairsOfImages = [...newImages, ...newImages];
-  // const [openCard, setOpenCard] = useState(pairsOfImages);
-
-  // const flipCard = (index, id) => {
-  //   let openCards;
-  //   openCards = pairsOfImages.map((img, i) =>
-  //     i === index ? { ...img, flipped: true } : img
-  //   );
-  //   setTempId(id);
-  //   console.log(id);
-  //   console.log(tempId);
-
-  //   setOpenCard(openCards);
-  // };
   useEffect(() => {
     setImages(getNewArray());
   }, []);
@@ -45,8 +31,8 @@ export default function Cards() {
             id={img.id}
             className={`card ${img.flipped ? "" : "flipped"}`}
             onClick={(e) => {
-              console.log(e.target);
-              dispatch(openCard(index));
+              // console.log(e.target);
+              dispatch(openCard({ id: img.id, index }));
             }}
           >
             <div className="flip-card-front">

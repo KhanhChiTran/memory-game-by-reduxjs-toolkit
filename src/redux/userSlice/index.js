@@ -6,6 +6,7 @@ const initialState = {
   tempId: null,
   tempCard: null,
   point: 0,
+  wrongPair: null,
 };
 
 const userSlice = createSlice({
@@ -13,10 +14,35 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     openCard(state, action) {
-      state.answerList[action.payload].flipped = true;
+      const { id, index } = action.payload;
+      const newCard = state.answerList[index];
+      newCard.flipped = true;
+      if (!state.isCardOpen) {
+        state.tempId = index;
+        state.tempCard = newCard;
+        state.isCardOpen = true;
+        return;
+      }
+      state.isCardOpen = false;
+      if (state.tempCard.id === id) {
+        state.point++;
+        console.log("matched");
+      } else {
+        console.log("not match");
+        console.log(state.tempId);
+        state.wrongPair = [state.tempId, index];
+        // setTimeout(() => {
+        //   state.answerList[state.tempId].flipped = false;
+        //   newCard.flipped = false;
+        // }, 1000);
+      }
+    },
+    closeCard(state, action) {
+      state.answerList[action.payload[0]].flipped = false;
+      state.answerList[action.payload[1]].flipped = false;
     },
   },
 });
 
-export const { openCard } = userSlice.actions;
+export const { openCard, closeCard } = userSlice.actions;
 export default userSlice.reducer;
